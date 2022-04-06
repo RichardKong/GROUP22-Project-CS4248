@@ -106,7 +106,7 @@ def convert_examples_to_features(examples, max_seq_length, tokenizer, dataset="w
     return features
 
 
-def evaluation(output, labels, task="classification"):
+def evaluation(output, labels, task="classification", thres=5):
     # print(output)
     if task == "classification":
         pred_labels = np.argmax(output, axis=1)
@@ -114,10 +114,10 @@ def evaluation(output, labels, task="classification"):
         precision = precision_score(labels, pred_labels)
         return np.sum(pred_labels == labels) * 1.0 / len(pred_labels), precision, f1
     else:
-        labels[labels < 5] = 0
-        labels[labels >= 5] = 1
-        output[output < 5] = 0
-        output[output >= 5] = 1
+        labels[labels < thres] = 0
+        labels[labels >= thres] = 1
+        output[output < thres] = 0
+        output[output >= thres] = 1
         f1 = f1_score(labels, output)
         precision = precision_score(labels, output)
         return np.sum(output == labels) * 1.0 / len(output), precision, f1
